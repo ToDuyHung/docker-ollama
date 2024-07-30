@@ -1,0 +1,30 @@
+6914MiB GPU is required
+
+conda create -n ollama python=3.10
+pip install ollama-python
+pip install ollama
+pip install torch==1.11.0+cu113 --extra-index-url https://download.pytorch.org/whl/cu113 # GPU
+
+- Build image ollama/ollama by Dockerfile
+sudo docker build -t ollama .
+    # GPU: FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime
+    # CPU: FROM pytorch/pytorch:latest
+
+- Pull weights:
+ollama pull llama3
+ollama pull llama3.1
+ollama pull gemma2
+
+- Copy path:
+cp -r /usr/share/ollama/.ollama/models ./ollama_models
+
+- Build client host:
+docker compose up
+    # GPU:
+    deploy:
+        resources:
+        reservations:
+        devices:
+        - driver: nvidia
+        count: 1
+        capabilities: [gpu]
